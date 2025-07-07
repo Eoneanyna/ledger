@@ -1,0 +1,10 @@
+ProjectName: MyLedgerApp
+#GinEngine: null
+#MysqlEngin: null
+Server:
+  Port: 8080
+Database:
+  IP: 127.0.0.1
+  Port: 3306
+  UserName: root
+  Password: 123456
