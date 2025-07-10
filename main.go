@@ -2,6 +2,7 @@ package main
 
 import (
 	"ledger/conf"
+	"ledger/database"
 	"ledger/route"
 )
 
@@ -14,6 +15,9 @@ func main() {
 	}
 	//注册路由
 	route.RegisterRoute(conf.Conf.GinEngine)
+
+	//检查表结构，若没有则创建
+	database.DatabaseTableSync()
 
 	if err := conf.Conf.GinEngine.Run(":" + conf.Conf.Server.Port); err != nil {
 		panic(err)

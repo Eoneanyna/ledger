@@ -1,5 +1,7 @@
 package database
 
+var UserTableName = "user"
+
 type User struct {
 	Id       int    `json:"id" xorm:"pk autoincr"` //主键+自增
 	Name     string `json:"name"`
