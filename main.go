@@ -2,6 +2,7 @@ package main
 
 import (
 	"ledger/conf"
+	"ledger/route"
 )
 
 //TIP <p>To run your code, right-click the code and select <b>Run</b>.</p> <p>Alternatively, click
@@ -11,6 +12,8 @@ func main() {
 	if err := conf.InitConfig(); err != nil {
 		panic(err)
 	}
+	//注册路由
+	route.RegisterRoute(conf.Conf.GinEngine)
 
 	if err := conf.Conf.GinEngine.Run(":" + conf.Conf.Server.Port); err != nil {
 		panic(err)
