@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"gorm.io/gorm"
+	"ledger/auth"
 )
 
 var Conf config
@@ -17,7 +18,7 @@ type config struct {
 }
 
 type ServerConfig struct {
-	Port int
+	Port string
 }
 
 type DatabaseConfig struct {
@@ -43,6 +44,9 @@ func InitConfig() error {
 	//初始化数据库
 
 	//初始化api
+	Conf.GinEngine = gin.Default()
+	// 使用自定义鉴权中间件
+	Conf.GinEngine.Use(auth.AuthMiddleware())
 
 	return nil
 }
