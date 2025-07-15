@@ -3,6 +3,7 @@ ProjectName: MyLedgerApp
 #MysqlEngin: null
 Server:
   Port: 8080
+  jwtSecret: "your-secret-key-here"
 Database:
   IP: 127.0.0.1
   Port: 3306

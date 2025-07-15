@@ -1,5 +1,7 @@
 package database
 
+import "ledger/conf"
+
 var UserTableName = "user"
 
 type User struct {
@@ -8,5 +10,16 @@ type User struct {
 	Password string `json:"password"`
 	Email    string `json:"email"`
 	Phone    string `json:"phone"`
-	Role     string `json:"role"`
+	Other1   string `json:"other1"` //保留字段
+}
+
+func InsertUser(user User) error {
+	_, err := conf.Conf.MysqlEngin.InsertOne(user)
+	return err
+}
+
+func GetUserByName(name string) (User, error) {
+	var user User
+	_, err := conf.Conf.MysqlEngin.Where("name = ?", name).Get(&user)
+	return user, err
 }

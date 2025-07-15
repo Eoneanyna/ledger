@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/spf13/viper"
-	"ledger/auth"
 	"log"
 	"xorm.io/xorm"
 )
@@ -21,7 +20,8 @@ type config struct {
 }
 
 type ServerConfig struct {
-	Port string
+	Port      string `json:"port,omitempty"`
+	JwtSecret string `json:"jwtSecret,omitempty"`
 }
 
 type DatabaseConfig struct {
@@ -56,8 +56,6 @@ func InitConfig() error {
 
 	//初始化api
 	Conf.GinEngine = gin.Default()
-	// 使用自定义鉴权中间件
-	Conf.GinEngine.Use(auth.AuthMiddleware())
 
 	return nil
 }

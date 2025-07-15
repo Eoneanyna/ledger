@@ -1,22 +1,53 @@
 package auth
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
+	"ledger/conf"
+	"net/http"
+	"time"
+)
 
+type CustomClaims struct {
+	UserID string `json:"user_id"`
+	jwt.StandardClaims
+}
+
+// GenerateToken 生成JWT token
+func GenerateToken(userID string) (string, error) {
+	claims := CustomClaims{
+		UserID: userID,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Hour * 72).Unix(), //设置过期时间
+			IssuedAt:  time.Now().Unix(),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return token.SignedString([]byte(conf.Conf.Server.JwtSecret))
+}
+
+// 解析token
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token := c.GetHeader("Authorization")
-		if token == "" {
+		tokenString := c.GetHeader("Authorization")
+		if tokenString == "" {
 			c.AbortWithStatusJSON(401, gin.H{"error": "Unauthorized"})
 			return
 		}
 
-		// 这里可以添加具体的 token 验证逻辑
-		if token != "valid_token" {
-			c.AbortWithStatusJSON(403, gin.H{"error": "Forbidden"})
+		// 解析token并验证
+		claims := &CustomClaims{}
+		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+			return []byte(conf.Conf.Server.JwtSecret), nil
+		})
+
+		if err != nil || !token.Valid {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid Token"})
 			return
 		}
 
-		// 如果验证通过，继续处理请求
+		// 将用户ID存入上下文，供后续处理函数使用
+		c.Set("user_id", claims.UserID)
 		c.Next()
 	}
 }
