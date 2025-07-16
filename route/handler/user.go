@@ -7,13 +7,14 @@ import (
 	"ledger/auth"
 	"ledger/database"
 	"ledger/my_err"
+	"ledger/utils"
 )
 
 type RegisterUserReq struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Email    string `json:"email"`
-	Phone    string `json:"phone"`
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+	Email    string `json:"email" binding:"required"`
+	Phone    string `json:"phone" binding:"required"`
 }
 
 func RegisterUser(r *gin.Context) {
@@ -21,7 +22,12 @@ func RegisterUser(r *gin.Context) {
 	var req RegisterUserReq
 	err := r.ShouldBindBodyWithJSON(&req)
 	if err != nil {
-		r.JSON(my_err.ErrInputForm.Code(), gin.H{"error": my_err.ErrInputForm.Error()})
+		resp := utils.Resp{
+			Code: my_err.ErrInputForm.Code(),
+			Msg:  my_err.ErrInputForm.Error(),
+			Data: nil,
+		}
+		r.JSON(my_err.ErrInputForm.Code(), resp)
 		return
 	}
 
@@ -34,24 +40,43 @@ func RegisterUser(r *gin.Context) {
 	err = database.InsertUser(user)
 	if err != nil {
 		log.Errorf("err = %+v, req = %+v", err, req)
-		r.JSON(my_err.ErrDataBaseFail.Code(), gin.H{"error": my_err.ErrDataBaseFail.Error()})
+		resp := utils.Resp{
+			Code: my_err.ErrDataBaseFail.Code(),
+			Msg:  my_err.ErrDataBaseFail.Error(),
+			Data: nil,
+		}
+		r.JSON(my_err.ErrDataBaseFail.Code(), resp)
 		return
 	}
-	r.JSON(200, gin.H{
-		"message": "注册成功",
-	})
+
+	resp := utils.Resp{
+		Code: 200,
+		Msg:  "注册成功",
+		Data: nil,
+	}
+	r.JSON(200, resp)
 }
 
 type LoginUserReq struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+}
+
+type LoginUserResp struct {
+	Token string `json:"token"`
 }
 
 func LoginUser(r *gin.Context) {
 	var req LoginUserReq
 	err := r.ShouldBindBodyWithJSON(&req)
 	if err != nil {
-		r.JSON(my_err.ErrUserNotFound.Code(), gin.H{"error": my_err.ErrUserNotFound.Error()})
+		log.Errorf("err = %+v, req = %+v", err, req)
+		resp := utils.Resp{
+			Code: my_err.ErrUserNotFound.Code(),
+			Msg:  my_err.ErrUserNotFound.Error(),
+			Data: nil,
+		}
+		r.JSON(my_err.ErrUserNotFound.Code(), resp)
 		return
 	}
 	//数据库查询用户
@@ -59,12 +84,23 @@ func LoginUser(r *gin.Context) {
 	user, err = database.GetUserByName(req.Username)
 	if err != nil {
 		log.Errorf("err = %+v, req = %+v", err, req)
-		r.JSON(my_err.ErrDataBaseFail.Code(), gin.H{"error": my_err.ErrDataBaseFail.Error()})
+		resp := utils.Resp{
+			Code: my_err.ErrDataBaseFail.Code(),
+			Msg:  my_err.ErrDataBaseFail.Error(),
+			Data: nil,
+		}
+		r.JSON(my_err.ErrDataBaseFail.Code(), resp)
 		return
 	}
 
 	if user.Password != req.Password {
-		r.JSON(my_err.ErrInvalidCredentials.Code(), gin.H{"error": my_err.ErrInvalidCredentials.Error()})
+		log.Debugf("err = %+v, req = %+v", err, req)
+		resp := utils.Resp{
+			Code: my_err.ErrInvalidCredentials.Code(),
+			Msg:  my_err.ErrInvalidCredentials.Error(),
+			Data: nil,
+		}
+		r.JSON(my_err.ErrInvalidCredentials.Code(), resp)
 		return
 	}
 
@@ -72,10 +108,21 @@ func LoginUser(r *gin.Context) {
 	token, err := auth.GenerateToken(fmt.Sprintf("%d", user.Id))
 	if err != nil {
 		log.Errorf("err = %+v, req = %+v", err, req)
-		r.JSON(my_err.ErrDataBaseFail.Code(), gin.H{"error": my_err.ErrDataBaseFail.Error()})
+		resp := utils.Resp{
+			Code: my_err.ErrDataBaseFail.Code(),
+			Msg:  my_err.ErrDataBaseFail.Error(),
+			Data: nil,
+		}
+		r.JSON(my_err.ErrDataBaseFail.Code(), resp)
 		return
 	}
-	r.JSON(200, gin.H{
-		"token": token,
-	})
+
+	resp := utils.Resp{
+		Code: 200,
+		Msg:  "登录成功",
+		Data: LoginUserResp{
+			Token: token,
+		},
+	}
+	r.JSON(200, resp)
 }

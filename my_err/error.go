@@ -11,6 +11,7 @@ const (
 
 const (
 	ErrDataBaseFail MyErr = 50000001 + iota
+	ErrServer
 )
 
 func (e MyErr) Code() int {
@@ -28,6 +29,8 @@ func (e MyErr) Error() string {
 		return "用户名或密码错误"
 	case ErrDataBaseFail:
 		return "数据库错误"
+	case ErrServer:
+		return "服务器错误"
 	default:
 		return "未知错误"
 	}

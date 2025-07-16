@@ -3,12 +3,13 @@ package route
 import (
 	"github.com/gin-gonic/gin"
 	"ledger/auth"
+	"ledger/route/handler"
 )
 
 var legerPrefix = "/leger"
 
-func RegisterLegerGroup(r *gin.RouterGroup) {
+func RegisterLedgerGroup(r *gin.RouterGroup) {
 	r.Group(legerPrefix, auth.AuthMiddleware())
-	//r.GET(legerPrefix+"/:id", GetLege)
+	r.POST("/get/ledger", handler.GetLedgerList)
 	//r.POST(legerPrefix, CreateLege)
 }

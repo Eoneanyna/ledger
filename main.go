@@ -14,7 +14,7 @@ func main() {
 	route.RegisterRoute(conf.Conf.GinEngine)
 
 	//检查表结构，若没有则创建
-	database.DatabaseTableSync()
+	database.DbTableSync()
 
 	if err := conf.Conf.GinEngine.Run(":" + conf.Conf.Server.Port); err != nil {
 		panic(err)

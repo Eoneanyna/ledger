@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+const AuthUserIDKey = "user_id"
+
 type CustomClaims struct {
 	UserID string `json:"user_id"`
 	jwt.StandardClaims
@@ -47,7 +49,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// 将用户ID存入上下文，供后续处理函数使用
-		c.Set("user_id", claims.UserID)
+		c.Set(AuthUserIDKey, claims.UserID)
 		c.Next()
 	}
 }

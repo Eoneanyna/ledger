@@ -8,6 +8,6 @@ var PublicPrefix = "/api/v1"
 
 func RegisterRoute(r *gin.Engine) {
 	rootRoute := r.Group(PublicPrefix)
-	RegisterLegerGroup(rootRoute)
+	RegisterLedgerGroup(rootRoute)
 	RegisterUserGroup(rootRoute)
 }
