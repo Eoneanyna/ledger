@@ -7,6 +7,7 @@ import (
 	"ledger/auth"
 	"ledger/database"
 	"ledger/my_err"
+	"ledger/utils"
 	"net/http"
 )
 
@@ -40,15 +41,25 @@ func GetLedgerList(r *gin.Context) {
 	err := r.ShouldBindBodyWithJSON(&req)
 	if err != nil {
 		log.Errorf("err = %+v, req = %+v", err, req)
-		r.JSON(my_err.ErrServer.Code(), gin.H{"error": my_err.ErrServer.Error()})
+		resp := utils.Resp{
+			Code: my_err.ErrServer.Code(),
+			Msg:  my_err.ErrServer.Error(),
+			Data: nil,
+		}
+		r.JSON(my_err.ErrServer.Code(), resp)
 	}
 
-	user_id := r.GetInt64(auth.AuthUserIDKey)
+	userId := r.GetInt64(auth.AuthUserIDKey)
 
-	ledgers, total, err := database.GetLedgerList(user_id, req.StartTimestamp, req.EndTimestamp, req.Page, req.PageSize)
+	ledgers, total, err := database.GetLedgerList(userId, req.StartTimestamp, req.EndTimestamp, req.Page, req.PageSize)
 	if err != nil {
 		log.Error(fmt.Sprintf("err = %+v, req = %+v", err, req))
-		r.JSON(my_err.ErrDataBaseFail.Code(), gin.H{"error": my_err.ErrDataBaseFail.Error()})
+		resp := utils.Resp{
+			Code: my_err.ErrDataBaseFail.Code(),
+			Msg:  my_err.ErrDataBaseFail.Error(),
+			Data: nil,
+		}
+		r.JSON(my_err.ErrDataBaseFail.Code(), resp)
 		return
 	}
 
