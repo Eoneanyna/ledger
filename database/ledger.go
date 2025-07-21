@@ -1,12 +1,15 @@
 package database
 
-import "ledger/conf"
+import (
+	"fmt"
+	"ledger/conf"
+)
 
-var LedgerTableName = "user"
+var LedgerTableName = "ledger"
 
 type Ledger struct {
 	Id     int64 `json:"id" xorm:"pk autoincr"`
-	UserId int   `json:"user_id"`
+	UserId int64 `json:"user_id"`
 	//金额
 	Amount int `json:"amount"`
 	//来源 支付宝、微信、银行卡等
@@ -45,4 +48,23 @@ func GetLedgerList(userId int64, startTimestamp int64, endTimestamp int64, page 
 	}
 
 	return ledgers, total, nil
+}
+
+func InsertLedger(ledger *Ledger) error {
+	_, err := conf.Conf.MysqlEngin.InsertOne(ledger)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func FindLedger(ledger *Ledger) error {
+	has, err := conf.Conf.MysqlEngin.Get(ledger)
+	if err != nil {
+		return err
+	}
+	if !has {
+		return fmt.Errorf("ledger not found")
+	}
+	return nil
 }

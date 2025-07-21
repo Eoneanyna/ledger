@@ -11,12 +11,12 @@ import (
 const AuthUserIDKey = "user_id"
 
 type CustomClaims struct {
-	UserID string `json:"user_id"`
+	UserID int64 `json:"user_id"`
 	jwt.StandardClaims
 }
 
 // GenerateToken 生成JWT token
-func GenerateToken(userID string) (string, error) {
+func GenerateToken(userID int64) (string, error) {
 	claims := CustomClaims{
 		UserID: userID,
 		StandardClaims: jwt.StandardClaims{
@@ -24,6 +24,7 @@ func GenerateToken(userID string) (string, error) {
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
+	//此处是对称加密，可以修改为es256非对称加密。生成公私钥，此处加载私钥文件进行生成token，验证时使用公钥。
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString([]byte(conf.Conf.Server.JwtSecret))
 }
@@ -40,6 +41,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		// 解析token并验证
 		claims := &CustomClaims{}
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+			//非对称加密return公钥
 			return []byte(conf.Conf.Server.JwtSecret), nil
 		})
 

@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	"ledger/auth"
@@ -17,17 +16,17 @@ type RegisterUserReq struct {
 	Phone    string `json:"phone" binding:"required"`
 }
 
-func RegisterUser(r *gin.Context) {
+func RegisterUser(c *gin.Context) {
 
 	var req RegisterUserReq
-	err := r.ShouldBindBodyWithJSON(&req)
+	err := c.ShouldBindBodyWithJSON(&req)
 	if err != nil {
 		resp := utils.Resp{
 			Code: my_err.ErrInputForm.Code(),
 			Msg:  my_err.ErrInputForm.Error(),
 			Data: nil,
 		}
-		r.JSON(my_err.ErrInputForm.Code(), resp)
+		c.JSON(my_err.ErrInputForm.Code(), resp)
 		return
 	}
 
@@ -45,7 +44,7 @@ func RegisterUser(r *gin.Context) {
 			Msg:  my_err.ErrDataBaseFail.Error(),
 			Data: nil,
 		}
-		r.JSON(my_err.ErrDataBaseFail.Code(), resp)
+		c.JSON(my_err.ErrDataBaseFail.Code(), resp)
 		return
 	}
 
@@ -54,7 +53,7 @@ func RegisterUser(r *gin.Context) {
 		Msg:  "注册成功",
 		Data: nil,
 	}
-	r.JSON(200, resp)
+	c.JSON(200, resp)
 }
 
 type LoginUserReq struct {
@@ -66,9 +65,9 @@ type LoginUserResp struct {
 	Token string `json:"token"`
 }
 
-func LoginUser(r *gin.Context) {
+func LoginUser(c *gin.Context) {
 	var req LoginUserReq
-	err := r.ShouldBindBodyWithJSON(&req)
+	err := c.ShouldBindBodyWithJSON(&req)
 	if err != nil {
 		log.Errorf("err = %+v, req = %+v", err, req)
 		resp := utils.Resp{
@@ -76,7 +75,7 @@ func LoginUser(r *gin.Context) {
 			Msg:  my_err.ErrUserNotFound.Error(),
 			Data: nil,
 		}
-		r.JSON(my_err.ErrUserNotFound.Code(), resp)
+		c.JSON(my_err.ErrUserNotFound.Code(), resp)
 		return
 	}
 	//数据库查询用户
@@ -89,7 +88,7 @@ func LoginUser(r *gin.Context) {
 			Msg:  my_err.ErrDataBaseFail.Error(),
 			Data: nil,
 		}
-		r.JSON(my_err.ErrDataBaseFail.Code(), resp)
+		c.JSON(my_err.ErrDataBaseFail.Code(), resp)
 		return
 	}
 
@@ -100,12 +99,12 @@ func LoginUser(r *gin.Context) {
 			Msg:  my_err.ErrInvalidCredentials.Error(),
 			Data: nil,
 		}
-		r.JSON(my_err.ErrInvalidCredentials.Code(), resp)
+		c.JSON(my_err.ErrInvalidCredentials.Code(), resp)
 		return
 	}
 
 	//生成token
-	token, err := auth.GenerateToken(fmt.Sprintf("%d", user.Id))
+	token, err := auth.GenerateToken(user.Id)
 	if err != nil {
 		log.Errorf("err = %+v, req = %+v", err, req)
 		resp := utils.Resp{
@@ -113,7 +112,7 @@ func LoginUser(r *gin.Context) {
 			Msg:  my_err.ErrDataBaseFail.Error(),
 			Data: nil,
 		}
-		r.JSON(my_err.ErrDataBaseFail.Code(), resp)
+		c.JSON(my_err.ErrDataBaseFail.Code(), resp)
 		return
 	}
 
@@ -124,5 +123,5 @@ func LoginUser(r *gin.Context) {
 			Token: token,
 		},
 	}
-	r.JSON(200, resp)
+	c.JSON(200, resp)
 }

@@ -6,10 +6,17 @@ import (
 	"ledger/route/handler"
 )
 
-var legerPrefix = "/leger"
+var legerPrefix = "/ledger"
 
 func RegisterLedgerGroup(r *gin.RouterGroup) {
-	r.Group(legerPrefix, auth.AuthMiddleware())
-	r.POST("/get/ledger", handler.GetLedgerList)
-	//r.POST(legerPrefix, CreateLege)
+	ledgerR := r.Group(legerPrefix, auth.AuthMiddleware())
+	//查询功能
+	ledgerR.POST("/ledgers", handler.GetLedgerList)
+	ledgerR.GET("/:ledger_id/detail", handler.GetLedger)
+
+	//新增功能
+	ledgerR.POST("", handler.CreateLedger)
+
+	//编辑功能
+	//r.PUT("/:ledger-id", handler.UpdateLedger)
 }

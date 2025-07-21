@@ -7,6 +7,7 @@ const (
 	ErrUserNotFound
 	ErrUserAlreadyExists
 	ErrInvalidCredentials
+	ErrInvalidParam
 )
 
 const (
@@ -31,6 +32,8 @@ func (e MyErr) Error() string {
 		return "数据库错误"
 	case ErrServer:
 		return "服务器错误"
+	case ErrInvalidParam:
+		return "参数错误"
 	default:
 		return "未知错误"
 	}
