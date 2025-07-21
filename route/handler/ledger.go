@@ -9,7 +9,6 @@ import (
 	"ledger/my_err"
 	"ledger/utils"
 	"net/http"
-	"strconv"
 )
 
 type GetLedgerListReq struct {
@@ -145,28 +144,32 @@ type GetLedgerResp struct {
 	Description string `json:"description" binding:"required"`
 }
 
+type GetLedgerReq struct {
+	//账单ID
+	LedgerId int64 `json:"ledger_id" binding:"required"`
+}
+
 func GetLedger(c *gin.Context) {
-	ledgerIdStr := c.Param("ledger_id")
-	ledgerId, err := strconv.ParseInt(ledgerIdStr, 10, 64)
+	var req GetLedgerReq
+	err := c.ShouldBindBodyWithJSON(&req)
 	if err != nil {
-		log.Errorf("invalid ledger_id: %v", err)
+		log.Errorf("err = %+v, req = %+v", err, req)
 		resp := utils.Resp{
-			Code: my_err.ErrInvalidParam.Code(),
-			Msg:  "invalid ledger_id",
+			Code: my_err.ErrServer.Code(),
+			Msg:  my_err.ErrServer.Error(),
 			Data: nil,
 		}
-		c.JSON(http.StatusBadRequest, resp)
-		return
+		c.JSON(my_err.ErrServer.Code(), resp)
 	}
 
 	userId := c.GetInt64(auth.AuthUserIDKey)
 	findData := &database.Ledger{
-		Id:     ledgerId,
+		Id:     req.LedgerId,
 		UserId: userId,
 	}
 	err = database.FindLedger(findData)
 	if err != nil {
-		log.Errorf("err = %+v, req = %+v", err, ledgerId)
+		log.Errorf("err = %+v, req = %+v", err, req.LedgerId)
 		resp := utils.Resp{
 			Code: my_err.ErrDataBaseFail.Code(),
 			Msg:  my_err.ErrDataBaseFail.Error(),
@@ -180,8 +183,9 @@ func GetLedger(c *gin.Context) {
 		Code: 200,
 		Msg:  "查询成功",
 		Data: GetLedgerResp{
-			Amount:      findData.Amount,
-			AmountFrom:  findData.AmountFrom,
+			Amount:     findData.Amount,
+			AmountFrom: findData.AmountFrom,
+			//TODO Tag
 			Timestamp:   findData.Timestamp,
 			Description: findData.Description,
 		},

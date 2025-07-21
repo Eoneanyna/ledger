@@ -12,7 +12,7 @@ func RegisterLedgerGroup(r *gin.RouterGroup) {
 	ledgerR := r.Group(legerPrefix, auth.AuthMiddleware())
 	//查询功能
 	ledgerR.POST("/ledgers", handler.GetLedgerList)
-	ledgerR.GET("/:ledger_id/detail", handler.GetLedger)
+	ledgerR.POST("/detail", handler.GetLedger)
 
 	//新增功能
 	ledgerR.POST("", handler.CreateLedger)
