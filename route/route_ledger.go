@@ -18,5 +18,5 @@ func RegisterLedgerGroup(r *gin.RouterGroup) {
 	ledgerR.POST("", handler.CreateLedger)
 
 	//编辑功能
-	//r.PUT("/:ledger-id", handler.UpdateLedger)
+	r.PUT("/detail", handler.UpdateLedgerHandler)
 }

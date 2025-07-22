@@ -11,6 +11,11 @@ func DbTableSync() {
 		log.Fatalf("同步表%s失败: %v\n", UserTableName, err)
 	}
 
+	err = conf.Conf.MysqlEngin.Sync(new(LedgerTag))
+	if err != nil {
+		log.Fatalf("同步表%s失败: %v\n", LedgerTableName, err)
+	}
+
 	err = conf.Conf.MysqlEngin.Sync(new(Ledger))
 	if err != nil {
 		log.Fatalf("同步表%s失败: %v\n", LedgerTableName, err)
