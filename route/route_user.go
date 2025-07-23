@@ -9,6 +9,6 @@ var userPrefix = "/user"
 
 func RegisterUserGroup(r *gin.RouterGroup) {
 	userR := r.Group(userPrefix)
-	userR.POST("/login", handler.LoginUser)
-	userR.POST("/register", handler.RegisterUser)
+	userR.POST("/login", handler.LoginUserHandler)
+	userR.POST("/register", handler.RegisterUserHandler)
 }

@@ -36,7 +36,7 @@ type GetLedgerListResp struct {
 	Total   int64        `json:"total"`
 }
 
-func GetLedgerList(c *gin.Context) {
+func GetLedgerListHandler(c *gin.Context) {
 	var req GetLedgerListReq
 	err := c.ShouldBindBodyWithJSON(&req)
 	if err != nil {
@@ -91,7 +91,7 @@ type CreateLedgerReq struct {
 	Description string `json:"description" binding:"required"`
 }
 
-func CreateLedger(c *gin.Context) {
+func CreateLedgerHandler(c *gin.Context) {
 	var req CreateLedgerReq
 	err := c.ShouldBindBodyWithJSON(&req)
 	if err != nil {
@@ -149,7 +149,7 @@ type GetLedgerReq struct {
 	LedgerId int64 `json:"ledger_id" binding:"required"`
 }
 
-func GetLedger(c *gin.Context) {
+func GetLedgerHandler(c *gin.Context) {
 	var req GetLedgerReq
 	err := c.ShouldBindBodyWithJSON(&req)
 	if err != nil {
@@ -196,7 +196,7 @@ func GetLedger(c *gin.Context) {
 type UpdateLedgerReq struct {
 	LedgerId int64 `json:"ledger_id" binding:"required"`
 	//金额
-	Amount int `json:"amount"`
+	Amount int `json:"amount"` //不可以填0
 	//来源 支付宝、微信、银行卡等
 	AmountFrom string `json:"amount_from"`
 	//自定义标签ID
@@ -221,18 +221,15 @@ func UpdateLedgerHandler(c *gin.Context) {
 	}
 
 	//userId := c.GetInt64(auth.AuthUserIDKey)
-	m, err := utils.StructToMap(req)
-	if err != nil {
-		log.Errorf("err = %+v, req = %+v", err, req)
-		resp := utils.Resp{
-			Code: my_err.ErrServer.Code(),
-			Msg:  my_err.ErrServer.Error(),
-			Data: nil,
-		}
-		c.JSON(http.StatusOK, resp)
-	}
 
-	err = database.UpdateLedger(req.LedgerId, m)
+	UpdateLedger := database.Ledger{
+		Amount:      req.Amount,
+		AmountFrom:  req.AmountFrom,
+		Timestamp:   req.Timestamp,
+		Description: req.Description,
+		TagId:       req.TagId,
+	}
+	err = database.UpdateLedger(req.LedgerId, UpdateLedger)
 	if err != nil {
 		resp := utils.Resp{
 			Code: my_err.ErrDataBaseFail.Code(),

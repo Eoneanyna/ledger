@@ -69,8 +69,8 @@ func FindLedger(ledger *Ledger) error {
 	return nil
 }
 
-func UpdateLedger(ledgerId int64, m map[string]interface{}) error {
-	_, err := conf.Conf.MysqlEngin.Where("id = ?", ledgerId).Update(m)
+func UpdateLedger(ledgerId int64, ledger Ledger) error {
+	_, err := conf.Conf.MysqlEngin.Where("id = ?", ledgerId).Update(ledger)
 	if err != nil {
 		return err
 	}

@@ -11,11 +11,11 @@ var legerPrefix = "/ledger"
 func RegisterLedgerGroup(r *gin.RouterGroup) {
 	ledgerR := r.Group(legerPrefix, auth.AuthMiddleware())
 	//查询功能
-	ledgerR.POST("/ledgers", handler.GetLedgerList)
-	ledgerR.POST("/detail", handler.GetLedger)
+	ledgerR.POST("/ledgers", handler.GetLedgerListHandler)
+	ledgerR.POST("/detail", handler.GetLedgerHandler)
 
 	//新增功能
-	ledgerR.POST("", handler.CreateLedger)
+	ledgerR.POST("", handler.CreateLedgerHandler)
 
 	//编辑功能
 	r.PUT("/detail", handler.UpdateLedgerHandler)

@@ -16,7 +16,7 @@ type RegisterUserReq struct {
 	Phone    string `json:"phone" binding:"required"`
 }
 
-func RegisterUser(c *gin.Context) {
+func RegisterUserHandler(c *gin.Context) {
 
 	var req RegisterUserReq
 	err := c.ShouldBindBodyWithJSON(&req)
@@ -65,7 +65,7 @@ type LoginUserResp struct {
 	Token string `json:"token"`
 }
 
-func LoginUser(c *gin.Context) {
+func LoginUserHandler(c *gin.Context) {
 	var req LoginUserReq
 	err := c.ShouldBindBodyWithJSON(&req)
 	if err != nil {
