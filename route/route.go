@@ -10,4 +10,5 @@ func RegisterRoute(r *gin.Engine) {
 	rootRoute := r.Group(PublicPrefix)
 	RegisterLedgerGroup(rootRoute)
 	RegisterUserGroup(rootRoute)
+	RegisterTagGroup(rootRoute)
 }

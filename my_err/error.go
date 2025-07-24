@@ -8,6 +8,7 @@ const (
 	ErrUserAlreadyExists
 	ErrInvalidCredentials
 	ErrInvalidParam
+	ErrTagLimit
 )
 
 const (
@@ -34,6 +35,8 @@ func (e MyErr) Error() string {
 		return "服务器错误"
 	case ErrInvalidParam:
 		return "参数错误"
+	case ErrTagLimit:
+		return "标签数量已达上限"
 	default:
 		return "未知错误"
 	}

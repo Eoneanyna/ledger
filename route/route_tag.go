@@ -9,14 +9,14 @@ import (
 var tagPrefix = "/tag"
 
 func RegisterTagGroup(r *gin.RouterGroup) {
-	tagR := r.Group(legerPrefix, auth.AuthMiddleware())
+	tagR := r.Group(tagPrefix, auth.AuthMiddleware())
 	//查询功能
 	tagR.POST("/tags", handler.GetTagListHandler)
 
 	// TODO 新增功能
-	//tagR.POST("", handler.CreateTagHandler)
+	tagR.POST("", handler.CreateTagHandler)
 
 	//TODO 编辑功能
 	//更改层级，更改名称
-	//tagR.PUT("/tag", handler.UpdateTagHandler)
+	tagR.PUT("/tag", handler.UpdateTagHandler)
 }
