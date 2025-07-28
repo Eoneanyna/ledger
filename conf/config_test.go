@@ -7,7 +7,7 @@ import (
 )
 
 func TestLoadConfig(t *testing.T) {
-	_, err := InitConfig()
+	err := InitConfig()
 	require.NoError(t, err)
 
 	fmt.Printf("ProjectName: %s\n", Conf.ProjectName)

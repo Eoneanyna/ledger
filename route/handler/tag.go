@@ -41,8 +41,9 @@ func GetTagListHandler(c *gin.Context) {
 	resp.GetTagList = make(map[int][]GetTag)
 	for _, v := range tags {
 		ledger := GetTag{
-			TagId:   v.TagId,
-			TagName: v.TagName,
+			TagId:    v.TagId,
+			TagName:  v.TagName,
+			TagTopic: v.TagTopic,
 		}
 		resp.GetTagList[v.TagTopic] = append(resp.GetTagList[v.TagTopic], ledger)
 		resp.Total++

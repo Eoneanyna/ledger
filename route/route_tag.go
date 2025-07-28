@@ -11,7 +11,7 @@ var tagPrefix = "/tag"
 func RegisterTagGroup(r *gin.RouterGroup) {
 	tagR := r.Group(tagPrefix, auth.AuthMiddleware())
 	//查询功能
-	tagR.POST("/tags", handler.GetTagListHandler)
+	tagR.GET("/tags", handler.GetTagListHandler)
 
 	// TODO 新增功能
 	tagR.POST("", handler.CreateTagHandler)
